@@ -1,14 +1,7 @@
-# DPS5005_pyGUI
-A python GUI to display &amp; control DPS5005 power supply
+# XY6015L_pyGUI
+A python GUI to display &amp; control XY6015L power supply
 
-* Hardware: DPS5005
-* Software: v1.6
-
-Additional settings within hardware:
-* hold 'up' arrow while powering on to access interface setup area. 
-* Modbus unit ID, baud rate, BT pin etc. 
-* Press 'set' twice in succession to exit.
-- note: baud rate 2400 & 19200 does not appear to work. 4800 & 9600 OK.
+* Hardware: XY6015L
 
 ## Program:
 What can it do:
@@ -17,10 +10,8 @@ What can it do:
 * set voltage & current levels
 * display voltage &amp; current in chart
 * export voltage &amp; current from chart as *.CSV
-* adjust brightness
 * lock hardware buttons
 * load, view and run *.CSV file (time, voltage & current)
-* Added battery charge capability
 
 <img src="images/ProgramConnected.png">
 
@@ -62,8 +53,6 @@ Li-Ion/Lipo - based CCCV using taper current as termination.
 * press 'Set' to load parameters then 'ON' to begin
 
 Note: Termination control begins 5seconds after charge start allowing current to stabilise.
-
-Check out http://batteryuniversity.com for more information.
 
 Disclaimer: User is responsible for safety. Program allows flexibility choose your values carefully.
 
@@ -113,9 +102,7 @@ pip3 install -r requirements.txt
 * dps5005_limits.ini - text file
 
 ## Download & run:
-```
-git clone https://github.com/lambcutlet/DPS5005_pyGUI
-```
+
 ```
 cd DPS5005_pyGUI/source_files/
 ```

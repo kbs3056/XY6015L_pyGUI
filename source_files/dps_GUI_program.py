@@ -68,7 +68,7 @@ class dps_GUI(QMainWindow):
 		super(dps_GUI,self).__init__()
 		loadUi('dps_GUI.ui', self)
 		
-		self.setWindowTitle('DPS5005_pyGUI')
+		self.setWindowTitle('XY6015L_pyGUI')
 		
 		self.mutex = QMutex()
 		
@@ -111,8 +111,8 @@ class dps_GUI(QMainWindow):
 		self.pushButton_onoff.clicked.connect(self.pushButton_onoff_clicked)		# On / Off
 		
 		self.pushButton_set.clicked.connect(self.pushButton_set_clicked)			# 'Set' - PSU
-		self.pushButton_set_2.clicked.connect(self.pushButton_set_2_clicked)		# 'Set' - NiMH/NiCad
-		self.pushButton_set_3.clicked.connect(self.pushButton_set_3_clicked)		# 'Set' - Li-Ion/Lipo
+		#self.pushButton_set_2.clicked.connect(self.pushButton_set_2_clicked)		# 'Set' - NiMH/NiCad
+		#self.pushButton_set_3.clicked.connect(self.pushButton_set_3_clicked)		# 'Set' - Li-Ion/Lipo
 		
 		self.pushButton_connect.clicked.connect(self.pushButton_connect_clicked)	# 'Connect'
 		
@@ -120,7 +120,7 @@ class dps_GUI(QMainWindow):
 		self.pushButton_CSV_clear.clicked.connect(self.pushButton_CSV_clear_clicked)# 'CSV clear'
 		self.pushButton_CSV_view.clicked.connect(self.pushButton_CSV_view_clicked)	# 'CSV view'
 		
-		self.horizontalSlider_brightness.valueChanged.connect(self.horizontalSlider_brightness_valueChanged)
+		#self.horizontalSlider_brightness.valueChanged.connect(self.horizontalSlider_brightness_valueChanged)
 		
 		self.actionOpen.triggered.connect(self.file_open)
 		self.actionOpen.setShortcut(Qt.CTRL | Qt.Key_O)								# File -> Open - open file *.csv
@@ -541,7 +541,7 @@ class dps_GUI(QMainWindow):
 		data = self.pass_2_dps('read_all')
 		if data != False:       
 			self.vout = ("%5.2f" % data[2]) # vout
-			self.iout = ("%5.3f" % data[3]) # iout
+			self.iout = ("%5.2f" % data[3]) # iout
 			
 			self.accrued_capacity(self.iout)
 			
@@ -553,14 +553,14 @@ class dps_GUI(QMainWindow):
 			self.update_graph_plot()
 			
 			self.lcdNumber_vset.display("%5.2f" % data[0])  # vset
-			self.lcdNumber_iset.display("%5.3f" % data[1])  # iset
+			self.lcdNumber_iset.display("%5.2f" % data[1])  # iset
 			self.lcdNumber_vout.display(self.vout)  # vout
 			self.lcdNumber_iout.display(self.iout)  # iout
 			
 			self.lcdNumber_pout.display("%5.2f" % data[4])  # power
 			self.lcdNumber_vin.display("%5.2f" % data[5])       # vin
 		# lock
-			value = data[6]
+			value = data[15]
 			if value == 1:
 				self.radioButton_lock.setChecked(True)
 			else:
@@ -576,15 +576,24 @@ class dps_GUI(QMainWindow):
 				self.label_protect.setText('Protection :   OPP')
 			else:
 				self.label_protect.setText('Protection :   OK')
-		
+				
+		# temp
+			self.label_temp.setText('Temperature:  %3.1f*C' % data[13])
+			
+		# energy
+			self.label_energy.setText('Energy      :    %5.3fWh' % data[8])
+			
+		# time
+			self.label_time.setText('Time          :%5dmins' % data[11])
+
 		# cv/cc 
-			if data[8] == 1:
+			if data[17] == 1:
 				self.label_cccv.setText('Mode        :   CC')
 			else:
 				self.label_cccv.setText('Mode        :   CV')
 
 		# on/off    
-			value = data[9]
+			value = data[18]
 			if value == 1:
 				self.label_onoff.setText('Output      :   ON')  # on/off
 				self.pushButton_onoff.setChecked(True)
@@ -594,13 +603,13 @@ class dps_GUI(QMainWindow):
 				self.pushButton_onoff.setChecked(False)
 				self.pushButton_onoff.setText("OFF")
 
-		# slider    
-			value = int(data[10])
-			self.horizontalSlider_brightness.setValue(value)    # brightness
-			self.label_brightness.setText('Brightness Level:   %s' % value)
+		# # slider    
+			# value = int(data[10])
+			# self.horizontalSlider_brightness.setValue(value)    # brightness
+			# self.label_brightness.setText('Brightness Level:   %s' % value)
 			
-			self.label_model.setText("Model       :   %s" % data[11])   # model
-			self.label_version.setText("Version     :   %s" % data[12]) # version
+			self.label_model.setText("Model       :   %s?" % data[22])   # model
+			self.label_version.setText("Version     :   %s?" % data[23]) # version
 	#       self.lcdNumber_iout.display(data[13])   # extract_m
 	#       self.lcdNumber_iout.display(data[14])   # iout
 	#       self.lcdNumber_iout.display(data[15])   # iout
@@ -622,7 +631,7 @@ class dps_GUI(QMainWindow):
 					
 	def combobox_populate(self):        # collects info on startup		
 		self.comboBox_datarate.clear()
-		self.comboBox_datarate.addItems(["9600", "2400", "4800", "19200"])  # note: 2400 & 19200 doesn't seem to work
+		self.comboBox_datarate.addItems(["115200", "9600", "2400", "4800", "19200"])  # note: 2400 & 19200 doesn't seem to work
 
 #--- serial port stuff  
 	def scan_serial_ports(self):

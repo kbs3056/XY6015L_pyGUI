@@ -83,25 +83,25 @@ class Dps5005:
 		return self.function(0x05, self.limits.decimals_vin)
 
 	def lock(self, RWaction='r', value=0):	# R/W
-		return self.function(0x06, 0, RWaction, value, self.limits.lock_set_max, self.limits.lock_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
+		return self.function(15, 0, RWaction, value, self.limits.lock_set_max, self.limits.lock_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 
 	def protect(self):	# R
 		return self.function(0x07, 0)
 
 	def cv_cc(self):	# R
-		return self.function(0x08, 0)
+		return self.function(17, 0)
 
 	def onoff(self, RWaction='r', value=0):	# R/W
-		return self.function(0x09, 0, RWaction, value, self.limits.onoff_set_max, self.limits.onoff_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
+		return self.function(18, 0, RWaction, value, self.limits.onoff_set_max, self.limits.onoff_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 		
 	def b_led(self, RWaction='r', value=0):	# R/W
 		return self.function(0x0A, 0, RWaction, value, self.limits.b_led_set_max, self.limits.b_led_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 
 	def model(self):	# R
-		return self.function(0x0B, 0)
+		return self.function(22, 0)
 
 	def version(self):	# R
-		return self.function(0x0C, self.limits.decimals_version)
+		return self.function(23, self.limits.decimals_version)
 
 	def extract_m(self, RWaction='r', value=0.0):	# R/W
 		return self.function(0x23, 0, RWaction, value, self.limits.extract_m_set_max, self.limits.extract_m_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
@@ -131,9 +131,9 @@ class Dps5005:
 	
 	def s_ini(self, RWaction='r', value=0):	# R/W
 		return self.function(0x57, 0, RWaction, value, self.limits.s_ini_set_max, self.limits.s_ini_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
-
+	
 	def read_all(self, RWaction='r', value=0.0):	# Read data as a block, much faster than individual reads
-		data = self.functions(0x00, 16, RWaction, value) # reg_addr, number of bytes, RWaction, value
+		data = self.functions(0x00, 30, RWaction, value) # reg_addr, number of bytes16, RWaction, value
 		#--- adjust values to floating points
 		data[0] = data[0] / float(10**self.limits.decimals_vset)	#100.0	# voltage_set
 		data[1] = data[1] / float(10**self.limits.decimals_iset)	#1000.0	# current_set
@@ -141,7 +141,9 @@ class Dps5005:
 		data[3] = data[3] / float(10**self.limits.decimals_i)	#1000.0	# current
 		data[4] = data[4] / float(10**self.limits.decimals_power)	#100.0	# power
 		data[5] = data[5] / float(10**self.limits.decimals_vin)	#100.0	# voltage_in
-		data[12] = data[12] / float(10**self.limits.decimals_version)	#10.0	# version
+		data[23] = data[23] / float(10**self.limits.decimals_version)	#10.0	# version
+		data[13] = data[13] / float(10)	#10.0	# temperature internal
+		data[8] = data[8] / float(1000)	#1000.0	# energy
 		return data
 	
 	def write_voltage_current(self, RWaction='r', value=0):	# write voltage & current as a block
@@ -237,7 +239,7 @@ class Dps5005:
 This file can operate independently controlling the DPS via the commandline however the GUI is much simpler.
 '''
 if __name__ == '__main__':
-	ser = Serial_modbus('/dev/ttyUSB1', 1, 9600, 8)
+	ser = Serial_modbus('/dev/ttyUSB0', 1, 115200, 8)
 	limits = Import_limits("dps5005_limits.ini")
 	dps = Dps5005(ser, limits)
 	try:
