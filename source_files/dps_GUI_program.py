@@ -567,15 +567,19 @@ class dps_GUI(QMainWindow):
 				self.radioButton_lock.setChecked(False)
 				
 		# protection
-			value = data[7]
+			value = data[16]
 			if value == 1:
-				self.label_protect.setText('Protection :   OVP')
+				self.label_protect.setText('Protection:  OVP out')
 			elif value == 2:
-				self.label_protect.setText('Protection :   OCP')
+				self.label_protect.setText('Protection:  OCP out')
 			elif value == 3:
-				self.label_protect.setText('Protection :   OPP')
+				self.label_protect.setText('Protection:  OPP out')
+			elif value == 4:
+				self.label_protect.setText('Protection:  UVP in')
+			elif value == 7:
+				self.label_protect.setText('Protection:  OTP inter')
 			else:
-				self.label_protect.setText('Protection :   OK')
+				self.label_protect.setText('Protection:  OK')
 				
 		# temp
 			self.label_temp.setText('Temperature:  %3.1f*C' % data[13])
@@ -583,8 +587,8 @@ class dps_GUI(QMainWindow):
 		# energy
 			self.label_energy.setText('Energy      :    %5.3fWh' % data[8])
 			
-		# time
-			self.label_time.setText('Time          :%5dmins' % data[11])
+		# time     0-60 mins. to be fixed, HH:MM:SS
+			self.label_time.setText('Time          :%2dmins' % data[11])
 
 		# cv/cc 
 			if data[17] == 1:

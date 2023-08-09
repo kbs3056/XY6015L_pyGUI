@@ -550,7 +550,7 @@
       <item>
        <widget class="QLabel" name="label_time">
         <property name="text">
-         <string>TIme</string>
+         <string>Time</string>
         </property>
        </widget>
       </item>

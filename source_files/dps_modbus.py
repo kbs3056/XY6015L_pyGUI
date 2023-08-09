@@ -51,7 +51,7 @@ class Serial_modbus:
 		
 	def read_block(self, reg_addr, size_of_block):
 		return self.instrument.read_registers(reg_addr, size_of_block)
-			
+
 	def write(self, reg_addr, value, decimal_places):
 		self.instrument.write_register(reg_addr, value, decimal_places) # register, value, No_of_decimal_places
 	
@@ -86,7 +86,7 @@ class Dps5005:
 		return self.function(15, 0, RWaction, value, self.limits.lock_set_max, self.limits.lock_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 
 	def protect(self):	# R
-		return self.function(0x07, 0)
+		return self.function(0x16, 0)
 
 	def cv_cc(self):	# R
 		return self.function(17, 0)
