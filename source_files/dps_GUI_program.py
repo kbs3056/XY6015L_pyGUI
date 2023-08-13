@@ -15,6 +15,7 @@ from PyQt5.QtCore import pyqtSlot, pyqtSignal, QRunnable, QThreadPool, QTimer, Q
 from PyQt5.QtWidgets import QApplication, QMainWindow, QSlider, QAction, QFileDialog, QGraphicsView
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.uic import loadUi
+
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
 import pyqtgraph as pg
@@ -129,7 +130,7 @@ class dps_GUI(QMainWindow):
 		self.actionQuit.triggered.connect(self.close)
 		self.actionQuit.setShortcut(Qt.CTRL | Qt.Key_Q)								# File -> Quit - quit application
 		self.actionQuit.setStatusTip('Quit application - CTRL+Q')
-	
+		
 	#--- do once on startup
 		self.combobox_populate()
 
@@ -141,7 +142,18 @@ class dps_GUI(QMainWindow):
 		self.timer = QTimer()
 		self.timer.setInterval(1000)
 		self.timer.timeout.connect(self.loop_function)
-
+		
+	#--- V I knobs 
+		self.dial_volt.valueChanged.connect(self.dial_volt_value_changed)	# 'dial volt'
+		self.dial_volt.setStatusTip('Turn with mouse, arrows or PgUp')
+		
+		self.dial_curr.valueChanged.connect(self.dial_curr_value_changed)	# 'dial curr'
+		self.dial_curr.setStatusTip('Turn with mouse, arrows or PgUp')
+		
+	#--- knobs maximum value
+		self.dial_volt.setMaximum(int(self.limits.voltage_set_max * 10 ** self.limits.decimals_vset))
+		self.dial_curr.setMaximum(int(self.limits.current_set_max * 10 ** self.limits.decimals_iset))
+	
 	def closeEvent(self, event):    
 		self.shutdown() # switch OFF output when application closes to prevent unmonitored charging
 		
@@ -303,6 +315,12 @@ class dps_GUI(QMainWindow):
 		self.capacity_time_old = time.time()
 		self.capacity = 0.0
 		
+	def dial_volt_value_changed(self, val):
+		self.lineEdit_vset.setText(str(val / 10 ** self.limits.decimals_vset))
+		
+	def dial_curr_value_changed(self, val):
+		self.lineEdit_iset.setText(str(val / 10 ** self.limits.decimals_iset))
+	
 	def radioButton_lock_clicked(self):
 		if self.radioButton_lock.isChecked():
 			self.pass_2_thread(self.lock_on_change)
@@ -569,17 +587,19 @@ class dps_GUI(QMainWindow):
 		# protection
 			value = data[16]
 			if value == 1:
-				self.label_protect.setText('Protection:  OVP out')
+				self.label_protect.setText('Protection :  OVP out')
 			elif value == 2:
-				self.label_protect.setText('Protection:  OCP out')
+				self.label_protect.setText('Protection :  OCP out')
 			elif value == 3:
-				self.label_protect.setText('Protection:  OPP out')
+				self.label_protect.setText('Protection :  OPP out')
 			elif value == 4:
-				self.label_protect.setText('Protection:  UVP in')
+				self.label_protect.setText('Protection :  UVP in')
 			elif value == 7:
-				self.label_protect.setText('Protection:  OTP inter')
+				self.label_protect.setText('Protection :  OTP inter')
+			elif value == 0:
+				self.label_protect.setText('Protection :  OK')
 			else:
-				self.label_protect.setText('Protection:  OK')
+				self.label_protect.setText('Protection :  ??')
 				
 		# temp
 			self.label_temp.setText('Temperature:  %3.1f*C' % data[13])
@@ -588,7 +608,7 @@ class dps_GUI(QMainWindow):
 			self.label_energy.setText('Energy      :    %5.3fWh' % data[8])
 			
 		# time     0-60 mins. to be fixed, HH:MM:SS
-			self.label_time.setText('Time          :%2dmins' % data[11])
+			self.label_time.setText('Time          :   %2d mins' % data[11])
 
 		# cv/cc 
 			if data[17] == 1:
@@ -614,9 +634,6 @@ class dps_GUI(QMainWindow):
 			
 			self.label_model.setText("Model       :   %s?" % data[22])   # model
 			self.label_version.setText("Version     :   %s?" % data[23]) # version
-	#       self.lcdNumber_iout.display(data[13])   # extract_m
-	#       self.lcdNumber_iout.display(data[14])   # iout
-	#       self.lcdNumber_iout.display(data[15])   # iout
 
 #--- send commands to dps 
 	def pass_2_dps(self, function, cmd = "r", value = 0):
