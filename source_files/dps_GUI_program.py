@@ -13,7 +13,7 @@ from dps_modbus import Import_limits
 
 from PyQt5.QtCore import pyqtSlot, pyqtSignal, QRunnable, QThreadPool, QTimer, QThread, QCoreApplication, QObject, QMutex, Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QSlider, QAction, QFileDialog, QGraphicsView
-from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtGui import QIcon, QFont, QPixmap
 from PyQt5.uic import loadUi
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -112,8 +112,8 @@ class dps_GUI(QMainWindow):
 		self.pushButton_onoff.clicked.connect(self.pushButton_onoff_clicked)		# On / Off
 		
 		self.pushButton_set.clicked.connect(self.pushButton_set_clicked)			# 'Set' - PSU
-		#self.pushButton_set_2.clicked.connect(self.pushButton_set_2_clicked)		# 'Set' - NiMH/NiCad
-		#self.pushButton_set_3.clicked.connect(self.pushButton_set_3_clicked)		# 'Set' - Li-Ion/Lipo
+		self.pushButton_set_2.clicked.connect(self.pushButton_set_2_clicked)		# 'Set' - NiMH/NiCad
+		self.pushButton_set_3.clicked.connect(self.pushButton_set_3_clicked)		# 'Set' - Li-Ion/Lipo
 		
 		self.pushButton_connect.clicked.connect(self.pushButton_connect_clicked)	# 'Connect'
 		
@@ -153,6 +153,10 @@ class dps_GUI(QMainWindow):
 	#--- knobs maximum value
 		self.dial_volt.setMaximum(int(self.limits.voltage_set_max * 10 ** self.limits.decimals_vset))
 		self.dial_curr.setMaximum(int(self.limits.current_set_max * 10 ** self.limits.decimals_iset))
+		
+	#--- icons
+		self.pix_on=QPixmap("icon/led_on.png")
+		self.pix_off=QPixmap("icon/led_off.png")
 	
 	def closeEvent(self, event):    
 		self.shutdown() # switch OFF output when application closes to prevent unmonitored charging
@@ -522,7 +526,7 @@ class dps_GUI(QMainWindow):
 		if value == 0:
 			self.label_operating_mode.setText('PSU')
 		elif value == 1:
-			self.label_operating_mode.setText('NiCad')
+			self.label_operating_mode.setText('NiMH')
 			if float(self.vout) > float(self.v_peak):   # find peak voltage
 				self.v_peak = float(self.vout)
 			if self.pushButton_onoff.isChecked() and (time.time() - self.pushButton_on_start_time > 5): # adds 5sec delay, to prevent immediate switch OFF
@@ -574,6 +578,7 @@ class dps_GUI(QMainWindow):
 			self.lcdNumber_iset.display("%5.2f" % data[1])  # iset
 			self.lcdNumber_vout.display(self.vout)  # vout
 			self.lcdNumber_iout.display(self.iout)  # iout
+			self.lcdNumber_temp_internal.display("%3.1f" % data[13])  # temperature internal
 			
 			self.lcdNumber_pout.display("%5.2f" % data[4])  # power
 			self.lcdNumber_vin.display("%5.2f" % data[5])       # vin
@@ -584,22 +589,29 @@ class dps_GUI(QMainWindow):
 			else:
 				self.radioButton_lock.setChecked(False)
 				
-		# protection
+		# protection  not all values implemented
 			value = data[16]
 			if value == 1:
-				self.label_protect.setText('Protection :  OVP out')
+				self.label_protect.setText('Protection :   OVP out')
+				self.label_led_prot.setPixmap(self.pix_on)
 			elif value == 2:
-				self.label_protect.setText('Protection :  OCP out')
+				self.label_protect.setText('Protection :   OCP out')
+				self.label_led_prot.setPixmap(self.pix_on)
 			elif value == 3:
-				self.label_protect.setText('Protection :  OPP out')
+				self.label_protect.setText('Protection :   OPP out')
+				self.label_led_prot.setPixmap(self.pix_on)
 			elif value == 4:
-				self.label_protect.setText('Protection :  UVP in')
+				self.label_protect.setText('Protection :   UVP in')
+				self.label_led_prot.setPixmap(self.pix_on)
 			elif value == 7:
-				self.label_protect.setText('Protection :  OTP inter')
+				self.label_protect.setText('Protection :   OTP inter')
+				self.label_led_prot.setPixmap(self.pix_on)
 			elif value == 0:
-				self.label_protect.setText('Protection :  OK')
+				self.label_protect.setText('Protection :   OK')
+				self.label_led_prot.setPixmap(self.pix_off)
 			else:
-				self.label_protect.setText('Protection :  ??')
+				self.label_protect.setText('Protection :   ??')
+				self.label_led_prot.setPixmap(self.pix_on)
 				
 		# temp
 			self.label_temp.setText('Temperature:  %3.1f*C' % data[13])
@@ -607,14 +619,16 @@ class dps_GUI(QMainWindow):
 		# energy
 			self.label_energy.setText('Energy      :    %5.3fWh' % data[8])
 			
-		# time     0-60 mins. to be fixed, HH:MM:SS
-			self.label_time.setText('Time          :   %2d mins' % data[11])
+		# time
+			self.label_time.setText('Time         :   %3d:%02d:%02d' % (data[10], data[11], data[12]))
 
 		# cv/cc 
 			if data[17] == 1:
 				self.label_cccv.setText('Mode        :   CC')
+				self.label_led.setPixmap(self.pix_on)
 			else:
 				self.label_cccv.setText('Mode        :   CV')
+				self.label_led.setPixmap(self.pix_off)
 
 		# on/off    
 			value = data[18]
@@ -632,7 +646,7 @@ class dps_GUI(QMainWindow):
 			# self.horizontalSlider_brightness.setValue(value)    # brightness
 			# self.label_brightness.setText('Brightness Level:   %s' % value)
 			
-			self.label_model.setText("Model       :   %s?" % data[22])   # model
+			self.label_model.setText("Model       :   %x?" % data[22])   # model
 			self.label_version.setText("Version     :   %s?" % data[23]) # version
 
 #--- send commands to dps 

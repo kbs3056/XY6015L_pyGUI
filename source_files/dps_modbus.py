@@ -103,37 +103,37 @@ class Dps5005:
 	def version(self):	# R
 		return self.function(23, self.limits.decimals_version)
 
-	def extract_m(self, RWaction='r', value=0.0):	# R/W
-		return self.function(0x23, 0, RWaction, value, self.limits.extract_m_set_max, self.limits.extract_m_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
+	# def extract_m(self, RWaction='r', value=0.0):	# R/W
+		# return self.function(0x23, 0, RWaction, value, self.limits.extract_m_set_max, self.limits.extract_m_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 				
-#---		
+# #---		
 		
-	def voltage_set2(self, RWaction='r', value=0.0):	# R/W
-		return self.function(0x50, self.limits.decimals_vset, RWaction, value, self.limits.voltage_set2_max, self.limits.voltage_set2_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
+	# def voltage_set2(self, RWaction='r', value=0.0):	# R/W
+		# return self.function(0x50, self.limits.decimals_vset, RWaction, value, self.limits.voltage_set2_max, self.limits.voltage_set2_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 			
-	def current_set2(self, RWaction='r', value=0.0):	# R/W
-		return self.function(0x51, self.limits.decimals_iset, RWaction, value, self.limits.current_set2_max, self.limits.current_set2_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
+	# def current_set2(self, RWaction='r', value=0.0):	# R/W
+		# return self.function(0x51, self.limits.decimals_iset, RWaction, value, self.limits.current_set2_max, self.limits.current_set2_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 
-	def s_ovp(self, RWaction='r', value=0):	# R/W
-		return self.function(0x52, self.limits.decimals_ovp, RWaction, value, self.limits.s_ovp_set_max, self.limits.s_ovp_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
+	# def s_ovp(self, RWaction='r', value=0):	# R/W
+		# return self.function(0x52, self.limits.decimals_ovp, RWaction, value, self.limits.s_ovp_set_max, self.limits.s_ovp_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 		
-	def s_ocp(self, RWaction='r', value=0):	# R/W
-		return self.function(0x53, self.limits.decimals_ocp, RWaction, value, self.limits.s_ocp_set_max, self.limits.s_ocp_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
+	# def s_ocp(self, RWaction='r', value=0):	# R/W
+		# return self.function(0x53, self.limits.decimals_ocp, RWaction, value, self.limits.s_ocp_set_max, self.limits.s_ocp_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 
-	def s_opp(self, RWaction='r', value=0):	# R/W
-		return self.function(0x54, self.limits.decimals_opp, RWaction, value, self.limits.s_opp_set_max, self.limits.s_opp_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
+	# def s_opp(self, RWaction='r', value=0):	# R/W
+		# return self.function(0x54, self.limits.decimals_opp, RWaction, value, self.limits.s_opp_set_max, self.limits.s_opp_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 
-	def b_led2(self, RWaction='r', value=0):	# R/W
-		return self.function(0x55, 0, RWaction, value, self.limits.b_led2_set_max, self.limits.b_led2_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
+	# def b_led2(self, RWaction='r', value=0):	# R/W
+		# return self.function(0x55, 0, RWaction, value, self.limits.b_led2_set_max, self.limits.b_led2_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 
-	def m_pre(self, RWaction='r', value=0):	# R/W
-		return self.function(0x56, 0, RWaction, value, self.limits.m_pre_set_max, self.limits.m_pre_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
+	# def m_pre(self, RWaction='r', value=0):	# R/W
+		# return self.function(0x56, 0, RWaction, value, self.limits.m_pre_set_max, self.limits.m_pre_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 	
-	def s_ini(self, RWaction='r', value=0):	# R/W
-		return self.function(0x57, 0, RWaction, value, self.limits.s_ini_set_max, self.limits.s_ini_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
+	# def s_ini(self, RWaction='r', value=0):	# R/W
+		# return self.function(0x57, 0, RWaction, value, self.limits.s_ini_set_max, self.limits.s_ini_set_min) # reg_addr, decimal_places, RWaction, value, max_value, min_value
 	
 	def read_all(self, RWaction='r', value=0.0):	# Read data as a block, much faster than individual reads
-		data = self.functions(0x00, 30, RWaction, value) # reg_addr, number of bytes16, RWaction, value
+		data = self.functions(0x00, 30, RWaction, value) # reg_addr, number of bytes, RWaction, value
 		#--- adjust values to floating points
 		data[0] = data[0] / float(10**self.limits.decimals_vset)	#100.0	# voltage_set
 		data[1] = data[1] / float(10**self.limits.decimals_iset)	#1000.0	# current_set
@@ -244,7 +244,7 @@ if __name__ == '__main__':
 	dps = Dps5005(ser, limits)
 	try:
 		while True:
-			route = raw_input("Enter command: ")
+			route = input("Enter command: ")
 			if route == "q":
 				quit()
 			elif route == "read":
@@ -252,7 +252,7 @@ if __name__ == '__main__':
 				print(dps.read_all())
 				print(time.time() - start)	
 			elif route == "write":
-				value = [23.47, 1.234]
+				value = [23.47, 1.23]
 				dps.write_voltage_current('w', value)
 			elif route == "r":
 				start = time.time()
@@ -268,49 +268,49 @@ if __name__ == '__main__':
 				print("protection  :  %6s" % dps.protect())	
 				print("cv_cc       :  %6s" % dps.cv_cc())
 				print("onoff       :  %6s" % dps.onoff())
-				print("b_led       :  %6s" % dps.b_led())
-				print("model       :  %6s" % dps.model())
+				#print("b_led       :  %6s" % dps.b_led())
+				print("model       :  %6x" % dps.model())
 				print("version     :  %6s" % dps.version())
-				print("extract_m   :  %6s" % dps.extract_m())
+				# print("extract_m   :  %6s" % dps.extract_m())
 				
-				print("voltage_set2:  %6s" % dps.voltage_set2())	
-				print("current_set2:  %6s" % dps.current_set2())
-				print("s_ovp       :  %6s" % dps.s_ovp())
-				print("s_ocp       :  %6s" % dps.s_ocp())
-				print("s_opp       :  %6s" % dps.s_opp())
-				print("b_led2      :  %6s" % dps.b_led2())
-				print("m_pre       :  %6s" % dps.m_pre())
-				print("s_ini       :  %6s" % dps.s_ini())
+				# print("voltage_set2:  %6s" % dps.voltage_set2())	
+				# print("current_set2:  %6s" % dps.current_set2())
+				# print("s_ovp       :  %6s" % dps.s_ovp())
+				# print("s_ocp       :  %6s" % dps.s_ocp())
+				# print("s_opp       :  %6s" % dps.s_opp())
+				# print("b_led2      :  %6s" % dps.b_led2())
+				# print("m_pre       :  %6s" % dps.m_pre())
+				# print("s_ini       :  %6s" % dps.s_ini())
 				
 			elif route == "vset":
-				value = raw_input("Enter value: ")
+				value = input("Enter value: ")
 				dps.voltage_set('w', float(value))
 			elif route == "iset":
-				value = raw_input("Enter value: ")
+				value = nput("Enter value: ")
 				dps.current_set('w', float(value))
 			elif route == "lock":
-				value = raw_input("Enter value: ")
+				value = input("Enter value: ")
 				dps.lock('w', float(value))
 			elif route == "on":
 				dps.onoff('w', 1)
 			elif route == "off":
 				dps.onoff('w', 0)		
-			elif route == "bled":
-				value = raw_input("Enter value: ")
-				dps.b_led('w', float(value))		
-			elif route == "sovp":
-				value = raw_input("Enter value: ")
-				dps.s_ovp('w', float(value))
-			elif route == "socp":
-				value = raw_input("Enter value: ")
-				dps.s_ocp('w', float(value))
-			elif route == "sopp":
-				value = raw_input("Enter value: ")
-				dps.s_opp('w', float(value))	
-			elif route == "sini":
-				value = raw_input("Enter value: ")
-				dps.s_ini('w', float(value))
-			elif route == "m":	
+			# elif route == "bled":
+				# value = input("Enter value: ")
+				# dps.b_led('w', float(value))		
+			# elif route == "sovp":
+				# value = input("Enter value: ")
+				# dps.s_ovp('w', float(value))
+			# elif route == "socp":
+				# value = input("Enter value: ")
+				# dps.s_ocp('w', float(value))
+			# elif route == "sopp":
+				# value = input("Enter value: ")
+				# dps.s_opp('w', float(value))	
+			# elif route == "sini":
+				# value = input("Enter value: ")
+				# dps.s_ini('w', float(value))
+			# elif route == "m":	
 				for i in dir(dps):
 					print(i)
 			elif route == "a":	
